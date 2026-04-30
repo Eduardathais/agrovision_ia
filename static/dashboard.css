@@ -1,0 +1,304 @@
+:root {
+  --bg: #0b1220;
+  --card: #111a2d;
+  --card2: #0d1626;
+  --muted: #9aa7bf;
+  --text: #e5ecf7;
+  --line: #24314f;
+  --accent: #22c55e;
+  --accent2: #0ea5e9;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* ── Hero ── */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+h1 { font-size: 26px; font-weight: 700; }
+.subtitle { color: var(--muted); font-size: 13px; margin-top: 3px; }
+
+.metrics { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.metric {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 18px;
+  text-align: center;
+  min-width: 90px;
+}
+
+.metric-value { font-size: 22px; font-weight: 700; color: var(--accent); }
+.metric-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── Grid principal ── */
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* ── Card base ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+}
+
+/* ── Câmera ── */
+.video-shell {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 16 / 9;
+}
+
+.video-frame {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Capturas ── */
+.captures-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.capture-thumb {
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+}
+
+.capture-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.capture-thumb img:hover { transform: scale(1.06); }
+
+/* ── Chat ── */
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-thread {
+  flex: 1;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 200px;
+  max-height: 340px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-placeholder {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  margin: auto;
+}
+
+.chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 92%;
+}
+
+.chat-msg-user { align-self: flex-end; }
+.chat-msg-assistant { align-self: flex-start; }
+
+.chat-role-label {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.chat-msg-user .chat-role-label { text-align: right; }
+
+.chat-bubble {
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-msg-user .chat-bubble {
+  background: #1e3a5f;
+  color: var(--text);
+  border-bottom-right-radius: 3px;
+}
+
+.chat-msg-assistant .chat-bubble {
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-bottom-left-radius: 3px;
+}
+
+.chat-status {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  min-height: 16px;
+}
+
+textarea#chat-question {
+  width: 100%;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  height: 64px;
+  font-family: inherit;
+  margin-bottom: 8px;
+}
+
+textarea#chat-question:focus { border-color: var(--accent2); }
+
+.btn-row { display: flex; gap: 8px; }
+
+.primary-btn {
+  flex: 1;
+  background: var(--accent);
+  color: #052e16;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.primary-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.primary-btn:hover:not(:disabled) { opacity: 0.88; }
+
+.secondary-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.secondary-btn:hover { border-color: var(--muted); color: var(--text); }
+
+/* ── Sugestões ── */
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.suggestion-chip {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.suggestion-chip:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* ── Eventos ── */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.event-card {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+}
+
+.event-label {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #052e16;
+  background: #86efac;
+  margin-bottom: 6px;
+}
+
+.event-conf { color: var(--accent2); font-weight: 600; font-size: 15px; }
+.event-time { color: var(--muted); font-size: 11px; margin-top: 3px; }
+
+.empty-msg {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+a { color: var(--accent); text-decoration: none; font-size: 12px; }
+a:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .captures-grid { grid-template-columns: repeat(3, 1fr); }
+}

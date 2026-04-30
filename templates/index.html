@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroVision AI</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div>
+        <h1>AgroVision AI</h1>
+        <p class="subtitle">Monitoramento visual + IA local</p>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-value">{{ events | length }}</div>
+          <div class="metric-label">Eventos</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">{{ captures | length }}</div>
+          <div class="metric-label">Capturas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid principal: câmera + chat -->
+    <div class="main-grid">
+
+      <!-- Coluna esquerda: câmera + capturas -->
+      <div>
+        <div class="card">
+          <div class="card-title">Câmera ao vivo</div>
+          <div class="video-shell">
+            <img id="live-feed" class="video-frame" src="/video_feed" alt="Câmera ao vivo" />
+          </div>
+
+          {% if captures %}
+          <div class="captures-grid">
+            {% for cap in captures %}
+            <div class="capture-thumb">
+              <a href="{{ cap }}" target="_blank">
+                <img src="{{ cap }}" alt="captura" loading="lazy" />
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Coluna direita: chat com o agente -->
+      <div>
+        <div class="card chat-area">
+          <div class="card-title">Agente AgroVision</div>
+
+          <div id="chat-thread" class="chat-thread">
+            <div class="chat-placeholder">Faça uma pergunta ao agente.</div>
+          </div>
+          <div id="chat-status" class="chat-status">Pronto para consultar o modelo local.</div>
+
+          <textarea
+            id="chat-question"
+            placeholder="Ex: avalie o risco operacional agora. (Enter para enviar)"
+          ></textarea>
+
+          <div class="btn-row">
+            <button id="chat-send-button" class="primary-btn" onclick="sendQuestion()">Enviar</button>
+            <button class="secondary-btn" onclick="clearHistory()">Limpar histórico</button>
+          </div>
+
+          <div class="suggestions">
+            <button class="suggestion-chip" onclick="fillAndSend('O que foi detectado nos últimos eventos?')">Últimos eventos</button>
+            <button class="suggestion-chip" onclick="fillAndSend('Avalie o risco operacional agora.')">Avaliar risco</button>
+            <button class="suggestion-chip" onclick="fillAndSend('Qual deve ser a próxima ação?')">Próxima ação</button>
+            <button class="suggestion-chip" onclick="fillAndSend('Resuma a situação em 3 pontos.')">Resumo</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Eventos recentes -->
+    <div class="card">
+      <div class="card-title">Eventos recentes</div>
+      {% if events %}
+      <div class="event-grid">
+        {% for e in events %}
+        <div class="event-card">
+          <div><span class="event-label">{{ e.label }}</span></div>
+          <div class="event-conf">{{ "%.2f" | format(e.confidence) }}</div>
+          <div class="event-time">{{ e.event_time }}</div>
+          <div style="margin-top: 6px;">
+            <a href="{{ e.image_path }}" target="_blank">ver imagem</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-msg">Nenhum evento registrado ainda.</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

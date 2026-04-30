@@ -1,0 +1,29 @@
+# Ambiente virtual
+.venv/
+
+# Variáveis de ambiente / segredos
+.env
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Banco de dados gerado em runtime
+detections.db
+
+# Modelo YOLO (baixado automaticamente pelo ultralytics)
+*.pt
+*.onnx
+
+# Capturas geradas em runtime
+static/captures/
+
+# Configurações locais do Claude Code
+.claude/
+
+# Logs e temporários
+*.log
+.DS_Store
+Thumbs.db
