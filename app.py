@@ -5,6 +5,7 @@ import threading
 import cv2
 import numpy as np
 from fastapi import FastAPI, Request
+from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -15,6 +16,7 @@ from services.event_repository import init_db, list_events
 from services.monitoring_agent import build_agent_messages, get_agent_status
 from services.ollama_client import ask_ollama, get_ollama_status, stream_ollama, warmup_ollama
 from services.schemas import ChatRequest, ChatResponse, Message
+from services.scraping_service import get_agro_dados
 from services.video_monitor import (
     generate_mjpeg_stream,
     get_camera_status,
@@ -23,6 +25,19 @@ from services.video_monitor import (
 )
 
 app = FastAPI(title="AgroVision AI")
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 os.makedirs("static", exist_ok=True)
 os.makedirs("templates", exist_ok=True)
@@ -109,7 +124,13 @@ def chat(req: ChatRequest):
         ]
         return ChatResponse(answer=answer, history=new_history)
     except Exception as exc:
-        return JSONResponse(status_code=500, content={"error": str(exc)})
+        print(f"[Chat] Erro interno: {exc}")
+        return JSONResponse(status_code=500, content={"error": "Erro interno ao processar a mensagem."})
+
+
+@app.get("/agro/dados")
+def agro_dados():
+    return JSONResponse(content=get_agro_dados())
 
 
 @app.post("/chat/stream")

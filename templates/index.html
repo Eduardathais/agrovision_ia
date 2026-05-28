@@ -83,6 +83,14 @@
 
     </div>
 
+    <!-- Contexto Agrícola (scraping externo) -->
+    <div class="card" id="agro-card">
+      <div class="card-title">Clima e Alertas</div>
+      <div id="agro-content" class="agro-grid">
+        <span class="agro-loading">Carregando dados externos...</span>
+      </div>
+    </div>
+
     <!-- Eventos recentes -->
     <div class="card">
       <div class="card-title">Eventos recentes</div>
@@ -107,5 +115,85 @@
   </div>
 
   <script src="/static/dashboard.js"></script>
+  <script>
+    const SEV_COLOR = { "Extremo": "#e53935", "Severo": "#fb8c00", "Moderado": "#f9a825" };
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatDate(dateStr) {
+      // "Wed, 27 May 2026 00:08:11 +0000" → "27/05/2026"
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString("pt-BR");
+      } catch { return dateStr; }
+    }
+
+    async function loadAgroDados() {
+      try {
+        const res = await fetch("/agro/dados");
+        const data = await res.json();
+        const c = data.clima;
+        const a = data.alertas;
+
+        const climaOk = c && c.erro === null;
+
+        // --- alertas ---
+        let alertasHtml = "";
+        if (a && a.total > 0) {
+          alertasHtml = a.alertas.map(al => {
+            const cor = SEV_COLOR[al.severidade] || "#888";
+            return `<div class="agro-alerta" style="border-left-color:${escHtml(cor)}">
+              <span class="alerta-sev" style="color:${escHtml(cor)}">${escHtml(al.severidade).toUpperCase()}</span>
+              ${escHtml(al.tipo)} — ${escHtml(al.data)} (${escHtml(al.valor)})
+            </div>`;
+          }).join("");
+        } else {
+          alertasHtml = `<div class="agro-sem-alerta">Sem alertas climáticos nos próximos 3 dias</div>`;
+        }
+
+        document.getElementById("agro-content").innerHTML = `
+          <div class="agro-section-title">Clima atual</div>
+          <div class="agro-grid-clima">
+            <div class="agro-item">
+              <div class="agro-label">Temperatura</div>
+              <div class="agro-value">${climaOk ? c.temperatura_c + " °C" : "—"}</div>
+            </div>
+            <div class="agro-item">
+              <div class="agro-label">Precipitação</div>
+              <div class="agro-value">${climaOk ? c.precipitacao_mm + " mm" : "—"}</div>
+            </div>
+            <div class="agro-item">
+              <div class="agro-label">Vento</div>
+              <div class="agro-value">${climaOk ? c.vento_kmh + " km/h" : "—"}</div>
+            </div>
+            <div class="agro-item">
+              <div class="agro-label">Umidade</div>
+              <div class="agro-value">${climaOk ? c.umidade_pct + " %" : "—"}</div>
+            </div>
+          </div>
+
+          <div class="agro-section-title" style="margin-top:14px">Alertas (3 dias)</div>
+          <div class="agro-alertas-wrap">${alertasHtml}</div>
+
+          <div class="agro-fontes">
+            ${escHtml(c.fonte)}${c.cached?" ♻":""} ·
+            ${a ? escHtml(a.fonte) + (a.cached?" ♻":"") : ""}
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById("agro-content").innerHTML =
+          '<span class="agro-loading">Dados externos indisponíveis.</span>';
+      }
+    }
+    loadAgroDados();
+    setInterval(loadAgroDados, 5 * 60 * 1000);
+  </script>
 </body>
 </html>

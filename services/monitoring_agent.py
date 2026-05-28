@@ -2,11 +2,10 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 
-from services.config import AGENT_EVENT_LIMIT
+from services.config import AGENT_EVENT_LIMIT, MAX_HISTORY_MESSAGES
 from services.event_repository import list_events
 from services.schemas import Message
-
-MAX_HISTORY_MESSAGES = 8
+from services.scraping_service import get_agro_dados
 
 
 @dataclass(frozen=True)
@@ -61,11 +60,41 @@ def normalize_history(history: list[Message]) -> list[dict]:
     return [{"role": m.role, "content": m.content} for m in filtered[-MAX_HISTORY_MESSAGES:]]
 
 
+def build_climate_context(dados: dict) -> str:
+    clima = dados.get("clima", {})
+    alertas_data = dados.get("alertas", {})
+
+    if clima.get("erro"):
+        return "Contexto climático: dados indisponíveis no momento."
+
+    lines = ["Contexto climático atual (Open-Meteo):"]
+    if clima.get("temperatura_c") is not None:
+        lines.append(f"- Temperatura: {clima['temperatura_c']} °C")
+    if clima.get("precipitacao_mm") is not None:
+        lines.append(f"- Precipitação: {clima['precipitacao_mm']} mm")
+    if clima.get("vento_kmh") is not None:
+        lines.append(f"- Vento: {clima['vento_kmh']} km/h")
+    if clima.get("umidade_pct") is not None:
+        lines.append(f"- Umidade: {clima['umidade_pct']}%")
+
+    alertas = alertas_data.get("alertas", [])
+    if alertas:
+        lines.append("Alertas climáticos (próximos 3 dias):")
+        for a in alertas[:3]:
+            lines.append(f"  - {a['tipo']} ({a['severidade']}) em {a['data']}: {a['valor']}")
+    else:
+        lines.append("Sem alertas climáticos para os próximos 3 dias.")
+
+    return "\n".join(lines)
+
+
 def build_agent_messages(question: str, history: list[Message]) -> list[dict]:
     events = list_events(AGENT_EVENT_LIMIT)
+    dados = get_agro_dados()
     return [
         {"role": "system", "content": _SYSTEM_PROMPT},
         {"role": "system", "content": build_event_context(events)},
+        {"role": "system", "content": build_climate_context(dados)},
         *normalize_history(history),
         {"role": "user", "content": question},
     ]

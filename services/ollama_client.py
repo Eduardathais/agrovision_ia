@@ -24,9 +24,16 @@ def ask_ollama(messages: list[dict]) -> str:
         "stream": False,
         "keep_alive": OLLAMA_KEEP_ALIVE,
     }
-    resp = requests.post(OLLAMA_URL, json=payload, timeout=(10, OLLAMA_TIMEOUT))
-    resp.raise_for_status()
-    return resp.json().get("message", {}).get("content", "")
+    try:
+        resp = requests.post(OLLAMA_URL, json=payload, timeout=(10, OLLAMA_TIMEOUT))
+        resp.raise_for_status()
+        return resp.json().get("message", {}).get("content", "")
+    except requests.exceptions.ConnectionError:
+        raise RuntimeError("Ollama indisponível. Verifique se o serviço está rodando.")
+    except requests.exceptions.ReadTimeout:
+        raise RuntimeError("Ollama demorou demais para responder. Tente novamente.")
+    except requests.exceptions.HTTPError as exc:
+        raise RuntimeError(f"Erro HTTP {exc.response.status_code} do Ollama.")
 
 
 def stream_ollama(messages: list[dict]) -> Generator[bytes, None, None]:

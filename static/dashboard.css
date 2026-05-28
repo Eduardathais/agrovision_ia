@@ -298,6 +298,76 @@ textarea#chat-question:focus { border-color: var(--accent2); }
 a { color: var(--accent); text-decoration: none; font-size: 12px; }
 a:hover { text-decoration: underline; }
 
+.agro-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.agro-grid-clima {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.agro-item {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.agro-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.agro-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* alertas */
+.agro-alertas-wrap { display: flex; flex-direction: column; gap: 6px; }
+
+.agro-alerta {
+  background: var(--surface2);
+  border-left: 3px solid #888;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.alerta-sev {
+  font-weight: 700;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.agro-sem-alerta {
+  font-size: 13px;
+  color: #4caf50;
+  padding: 6px 0;
+}
+
+/* fontes rodapé */
+.agro-fontes {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.agro-loading {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
 @media (max-width: 700px) {
   .main-grid { grid-template-columns: 1fr; }
   .captures-grid { grid-template-columns: repeat(3, 1fr); }
